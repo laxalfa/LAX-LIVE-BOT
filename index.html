@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAX LIVE BOT</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body>
+<header class="top"><div class="brand"><span class="logo">LAX</span><div><b>LAX LIVE BOT</b><small>YOUTUBE STREAM ASSISTANT</small></div></div><form action="/logout" method="post"><button class="btn secondary" type="submit">Log out</button></form></header>
+<main class="wrap">
+<section class="hero"><p class="eyebrow">LAX ALFA EFX × LAX ESPORTS OFFICIAL</p><h1>Your livestream.<br><em>Your own chat bot.</em></h1><p class="sub">Welcome viewers, answer commands and post scheduled reminders automatically.</p></section>
+{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="notices">{% for category,message in messages %}<div class="notice {{category}}">{{message}}</div>{% endfor %}</div>{% endif %}{% endwith %}
+<section class="panel">
+<div class="section-head"><div><p class="eyebrow">CHANNEL CONNECTIONS</p><h2>Connect YouTube</h2></div><span class="count">{{ profiles|length }} connected</span></div>
+<p class="muted">Connect each channel using the Google account that owns it. Repeat this step for your second channel.</p>
+<form class="connect" action="{{ url_for('oauth_start') }}" method="post">
+<label for="label">Channel label</label><input id="label" name="label" placeholder="e.g. LAX ALFA EFX" maxlength="40" required>
+<button class="btn primary" type="submit">＋ Connect Google account</button>
+</form>
+</section>
+<section class="cards">
+{% for p in profiles %}
+<article class="channel panel">
+<div class="channel-top"><div class="avatar">▶</div><div class="channel-name"><h3>{{p.channel_title}}</h3><p>{{p.label}} · {{p.channel_id}}</p></div></div>
+<div class="status"><span class="dot {% if states.get(p.id|string,{}).get('running') %}on{% endif %}"></span>{{ states.get(p.id|string,{}).get('message','Stopped') }}</div>
+<div class="actions"><button class="btn primary" onclick="botAction({{p.id}},'start')">Start bot</button><button class="btn secondary" onclick="botAction({{p.id}},'stop')">Stop</button><a class="btn secondary" href="{{url_for('settings',profile_id=p.id)}}">Settings</a></div>
+<form action="{{url_for('delete_profile',profile_id=p.id)}}" method="post" onsubmit="return confirm('Remove this channel connection?')"><button class="text-btn">Remove connection</button></form>
+</article>
+{% else %}
+<div class="empty panel"><div class="empty-icon">＋</div><h3>No channels connected yet</h3><p>Connect your first YouTube channel above.</p></div>
+{% endfor %}
+</section>
+<section class="info-grid"><div class="mini panel"><b>01 / Welcome replies</b><p>Greets a viewer when their first chat message is seen during the current bot session.</p></div><div class="mini panel"><b>02 / Chat commands</b><p>Built-in <code>!help</code> and your own custom commands.</p></div><div class="mini panel"><b>03 / Reminders</b><p>Optional repeating messages with a minimum five-minute interval.</p></div></section>
+<footer>Made for LAX • Keep your OAuth secrets private • YouTube API usage applies</footer>
+</main><script src="{{url_for('static',filename='app.js')}}"></script>
+</body></html>

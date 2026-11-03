@@ -1,0 +1,16 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Bot Settings | LAX LIVE BOT</title><link rel="stylesheet" href="{{url_for('static',filename='style.css')}}"></head><body>
+<header class="top"><a class="back" href="/">← Dashboard</a><div class="brand"><span class="logo">LAX</span><div><b>LAX LIVE BOT</b><small>CHANNEL SETTINGS</small></div></div></header>
+<main class="wrap narrow"><section class="hero compact"><p class="eyebrow">CONFIGURATION</p><h1>{{profile.channel_title}}</h1><p class="sub">Set the automated chat behaviour for this channel.</p></section>
+{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="notices">{% for category,message in messages %}<div class="notice {{category}}">{{message}}</div>{% endfor %}</div>{% endif %}{% endwith %}
+<form class="panel settings-form" method="post">
+<div class="setting"><div><h3>Welcome message</h3><p>Sent when the bot sees a viewer's first chat message in a session.</p></div><label class="switch"><input type="checkbox" name="welcome_enabled" {% if settings.welcome_enabled %}checked{% endif %}><span></span></label></div>
+<label>Welcome text <small>Use {name} for the viewer's display name.</small><input name="welcome_text" value="{{settings.welcome_text}}" maxlength="180"></label>
+<hr>
+<div class="setting"><div><h3>Scheduled reminders</h3><p>Posts a repeating reminder while your stream is live.</p></div><label class="switch"><input type="checkbox" name="reminder_enabled" {% if settings.reminder_enabled %}checked{% endif %}><span></span></label></div>
+<label>Reminder message<input name="reminder_text" value="{{settings.reminder_text}}" maxlength="180"></label>
+<label>Repeat every (5–180 minutes)<input type="number" name="reminder_minutes" min="5" max="180" value="{{settings.reminder_minutes}}"></label>
+<hr>
+<label>Custom commands <small>JSON format. Keys must start with !. Example: {"!discord":"Join our Discord: YOUR_INVITE","!yt":"Subscribe to LAX!"}</small><textarea name="commands_json" rows="7" spellcheck="false">{{commands_pretty}}</textarea></label>
+<p class="hint">Built-in command: <code>!help</code>. Custom commands are matched when they are the first word in chat.</p>
+<div class="actions"><button class="btn primary" type="submit">Save settings</button><a class="btn secondary" href="/">Cancel</a></div>
+</form><footer>Changes apply to the next chat polling cycle.</footer></main></body></html>
